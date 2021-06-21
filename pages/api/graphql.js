@@ -1,4 +1,5 @@
 import { ApolloServer, gql } from 'apollo-server-micro'
+import cors from 'micro-cors' // highlight-line
 
 const topdomains = [
     {
@@ -44,4 +45,9 @@ export const config = {
   },
 }
 
-export default apolloServer.createHandler({ path: '/api/graphql' })
+//export default apolloServer.createHandler({ path: '/api/graphql' })
+
+export default apolloServer.start().then(() => {
+    const handler = apolloServer.createHandler({ path: '/api/graphql' }); // highlight-line
+    return cors((req, res) => req.method === 'OPTIONS' ? res.end() : handler(req, res)) // highlight-line
+});
